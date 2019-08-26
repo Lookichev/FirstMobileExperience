@@ -60,6 +60,9 @@ public class Movement : MonoBehaviour
 		//Если : очередь полна - ничего не предпринимать
 		if (_Queue.Count == 2) return;
 
+		if (move == TypeMovement.Up) MainManager.Audio.PlayFrontMoveSound();
+		else MainManager.Audio.PlaySideMoveSound();
+
 		_Queue.Enqueue(move);
 
 		//Добавлено первое движение на выполнение

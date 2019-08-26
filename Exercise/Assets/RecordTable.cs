@@ -5,6 +5,16 @@ using UnityEngine;
 public static class RecordTable
 {
 	/// <summary>
+	/// Выключен-ли звук
+	/// </summary>
+	public static bool Mute = false;
+
+	/// <summary>
+	/// Установленная громкость звука
+	/// </summary>
+	public static float SoundValue = 1f;
+
+	/// <summary>
 	/// Хранит рекорды между сессиями
 	/// </summary>
 	public static List<KeyValuePair<string, int>> Records { get; set; }

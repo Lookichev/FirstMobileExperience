@@ -38,9 +38,16 @@ public class EnemyManager : MonoBehaviour
 	/// </summary>
 	private float _Timer = 0f;
 
+	/// <summary>
+	/// Действующее время между созданием шариков
+	/// </summary>
+	private int _RealIntervalSphere;
+
 	void Start()
     {
 		_Stairway = GetComponent<StairwayManager>();
+
+		_RealIntervalSphere = IntervalSphere;
     }
 
     void Update()

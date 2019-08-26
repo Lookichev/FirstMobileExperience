@@ -11,10 +11,19 @@ public class StairwayManager : MonoBehaviour
 	private GameObject StairwayCreater;
 
 	/// <summary>
-	/// Шаблон лестницы
+	/// Шаблоны ступенек
 	/// </summary>
+	/// <remarks>
+	/// [0] - полная ступенька с 7 позициями
+	/// [1] - 6 - позиций
+	/// [2] - 5 - позиций
+	/// [3] - 4 позиции
+	/// [4] - 3 позиции
+	/// [5] - 2 позиции
+	/// </remarks>
 	[SerializeField]
-	private GameObject StairwayPrefab;
+	private GameObject[] StairwayPrefabs;
+
 
 	/// <summary>
 	/// Путь в Высшую Лигу
@@ -34,54 +43,84 @@ public class StairwayManager : MonoBehaviour
 	public Vector3 GetLastStep => _Ladders.Last.Value.transform.position;
 
 	/// <summary>
-	/// Кол-во пройденных ступенек (для генерации нового блока)
-	/// </summary>
-	private int _Score = 0;
-
-	/// <summary>
 	/// Создает новый блок лестницы
 	/// </summary>
 	private void CreateNewBlock()
 	{
-		_Ladders.AddLast(Instantiate(StairwayPrefab, StairwayCreater.transform));
-		SetPosition();
+		//Экземпляр ступеньки
+		GameObject block = null;
+		//Индекс шаблона ступеньки
+		int range = 0;
+
+		//Если, есть повышенный уровень сложности - учитываем координату Z
+		//Если : сложность игры равная двум шагам усложнения не превышает пройденный путь - сложность не повышать
+		if (MainManager.StepComplications * 2 < MainManager.Interface.NumStep)
+			block = Instantiate(StairwayPrefabs[0], StairwayCreater.transform);
+		//Добавляются ступеньки длины 6 и 5 шаговые
+		else if (MainManager.StepComplications * 3 < MainManager.Interface.NumStep)
+		{
+			range = Random.Range(0, 4);
+			block = Instantiate(StairwayPrefabs[range], StairwayCreater.transform);
+		}
+		//Добавляются ступеньки 4 и 3 шаговые
+		else if (MainManager.StepComplications * 3 > MainManager.Interface.NumStep)
+		{
+			//range = Random.Range(0, 5);НАДО ДОБАВИТЬ ПРОВЕРКУ, ЧТОБЫ СТУПЕНЬКИ ВСЕГДА ИМЕЛИ ПУТЬ ИХ ПЕРЕШАГИВАНИЯ, ИНАЧЕ ОНИ МОГУТ СТОЯТЬ ДАЛЕКО ДРУГ ОТ ДРУЖКИ
+			range = Random.Range(0, 4);
+			block = Instantiate(StairwayPrefabs[range], StairwayCreater.transform);
+		}
+
+		//Установка координаты Z
+		var posZ = 0;
+		if (range == 0) { }
+		//Шестишажные ступеньки имеют два варианта позиционирования
+		else if (range == 1) posZ = Random.Range(0, 2) - 1;
+		//Пятишажные ступеньки имеют три варианта позиции
+		else if (range == 2) posZ = Random.Range(-1, 2);
+		//Четырехшажные ступеньки имеют 4 варианта позиции
+		else if(range == 3) posZ = Random.Range(-1, 3) - 1;
+		//Трехшажные имеют - 5 позиций
+		else posZ = Random.Range(-2, 3);
+
+		//Установка координат X и Y
+		//Локальная позиция экземпляра ступеньки
+		Vector3 pos = _Ladders.Last.Value.transform.localPosition;
+		//Смещение последнего блока на два вверх и вперед (локальные координаты)
+		block.transform.localPosition = new Vector3(pos.x + 1, pos.y + 1, posZ);
+
+		_Ladders.AddLast(block);
 	}
 
 	void Start()
 	{
 		_Ladders = new LinkedList<GameObject>();
 
-		_Ladders.AddLast(Instantiate(StairwayPrefab, StairwayCreater.transform));
+		_Ladders.AddLast(Instantiate(StairwayPrefabs[0], StairwayCreater.transform));
+		_Ladders.Last.Value.transform.position = new Vector3(10, -10, 0);
+
 		//Строим первые ступени
-		while (_Ladders.Count != 5) CreateNewBlock();
-	}
-
-	void Update()
-	{
-		//Если : персонаж прошел две ступеньки - надо добавить новые
-		if (MainManager.Interface.NumStep - _Score == 2)
+		while (_Ladders.Count != 25)
 		{
-			CreateNewBlock();
-			_Score = MainManager.Interface.NumStep;
-		}
+			var block = Instantiate(StairwayPrefabs[0], StairwayCreater.transform);
 
-		//Если : блоков много - удаляем старые
-		if (_Ladders.Count == 10)
-		{
-			Destroy(_Ladders.First.Value);
-			_Ladders.RemoveFirst();
+			//Координаты предпоследнего блока лестницы
+			var position = _Ladders.Last.Value.transform.localPosition;
+
+			//Смещение последнего блока на один вверх и вперед (локальные координаты)
+			block.transform.localPosition = new Vector3(position.x + 1, position.y + 1, 0);
+
+			_Ladders.AddLast(block);
 		}
 	}
 
 	/// <summary>
-	/// Установка положения новых ступенек
+	/// Генерирует новую ступеньку и удаляет старую
 	/// </summary>
-	private void SetPosition()
+	public void CreateNewStep()
 	{
-		//Координаты предпоследнего блока лестницы
-		var position = _Ladders.Last.Previous.Value.transform.localPosition;
+		CreateNewBlock();
 
-		//Смещение последнего блока на два вверх и вперед (локальные координаты)
-		_Ladders.Last.Value.transform.localPosition = new Vector3(position.x + 2, position.y + 2, 0);
+		Destroy(_Ladders.First.Value);
+		_Ladders.RemoveFirst();
 	}
 }

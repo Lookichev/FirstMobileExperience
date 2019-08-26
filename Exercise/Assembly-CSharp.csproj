@@ -62,14 +62,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\FlameCreater.cs" />
     <Compile Include="Assets\Lifting.cs" />
     <Compile Include="Assets\LookUnit.cs" />
     <Compile Include="Assets\MainMenu.cs" />
+    <Compile Include="Assets\Managers\AudioManager.cs" />
     <Compile Include="Assets\Managers\EnemyManager.cs" />
     <Compile Include="Assets\Managers\MainManager.cs" />
+    <Compile Include="Assets\Managers\MobileManager.cs" />
     <Compile Include="Assets\Managers\StairwayManager.cs" />
     <Compile Include="Assets\Managers\UIManager.cs" />
-    <Compile Include="Assets\MobileManager.cs" />
+    <Compile Include="Assets\Materials\CloudSystem\SCS.cs" />
     <Compile Include="Assets\Movement.cs" />
     <Compile Include="Assets\OrbitCamera.cs" />
     <Compile Include="Assets\RecordTable.cs" />

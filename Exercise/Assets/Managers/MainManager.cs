@@ -6,12 +6,18 @@ using UnityEngine;
 [RequireComponent(typeof(StairwayManager))]
 [RequireComponent(typeof(UIManager))]
 [RequireComponent(typeof(MobileManager))]
+[RequireComponent(typeof(AudioManager))]
 public class MainManager : MonoBehaviour
 {
 	/// <summary>
+	/// Шаг усложнения игры
+	/// </summary>
+	public static int StepComplications = 15;
+
+	/// <summary>
 	/// Включен режим мобильного управления
 	/// </summary>
-	public static bool isMobileVersion { get; private set; } = true;
+	public static bool isMobileVersion { get; private set; }// = true;
 
 	public static bool GameOver { get; set; }
 
@@ -23,16 +29,15 @@ public class MainManager : MonoBehaviour
 
 	public static MobileManager Mobile { get; private set; }
 
-	private static MainManager _I;
-
+	public static AudioManager Audio { get; private set; }
+	
 	void Start()
     {
 		Enemy = gameObject.GetComponent<EnemyManager>();
 		Stairway = gameObject.GetComponent<StairwayManager>();
 		Interface = gameObject.GetComponent<UIManager>();
 		Mobile = gameObject.GetComponent<MobileManager>();
-
-		_I = this;
+		Audio = gameObject.GetComponent<AudioManager>();
 	}
 
 	/// <summary>
@@ -42,13 +47,13 @@ public class MainManager : MonoBehaviour
 	{
 		if (GameOver) return;
 
-		_I.StartCoroutine(_I.SlowGame());
+		Stairway.StartCoroutine(SlowGame());
 	}
 
 	/// <summary>
 	/// Замедление игры
 	/// </summary>
-	private IEnumerator SlowGame()
+	private static IEnumerator SlowGame()
 	{
 		GameOver = true;
 
@@ -61,5 +66,7 @@ public class MainManager : MonoBehaviour
 		Time.timeScale = 0;
 
 		Interface.OpenGameOverMenu();
+		Audio.StopSoundtrack();
+		Audio.PlayGameOverSound();
 	}
 }

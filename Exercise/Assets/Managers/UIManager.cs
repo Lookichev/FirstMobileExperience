@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
 		NumStep += 1;
 		//Запись рекорда
 		RecordText.text = NumStep.ToString();
+		MainManager.Stairway.CreateNewStep();
 	}
 
 	/// <summary>
